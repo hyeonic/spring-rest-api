@@ -17,6 +17,12 @@ This cmdlet will create Postgres instance so that you can connect to a database 
 * password: pass
 * post: 5432
 
+### start
+```
+docker start rest
+docker restart hello
+```
+
 ### Getting into the Postgres container
 
 ```
