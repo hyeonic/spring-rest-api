@@ -1,6 +1,5 @@
 package com.hyeonic.springrestapi.accounts;
 
-import org.bouncycastle.jcajce.provider.symmetric.AES;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,21 +23,16 @@ public class AccountService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    public Account saveAccount( Account account ) {
-        account.setPassword( this.passwordEncoder.encode(account.getPassword()) );
-        return this.accountRepository.save( account );
+    public Account saveAccount(Account account) {
+        account.setPassword(this.passwordEncoder.encode(account.getPassword()));
+        return this.accountRepository.save(account);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
-        return new User(account.getEmail(), account.getPassword(), authorities(account.getRoles()));
+        return new AccountAdapter(account);
     }
 
-    private Collection<? extends GrantedAuthority> authorities(Set<AccountRole> roles) {
-        return roles.stream()
-                .map(r -> new SimpleGrantedAuthority("ROLE_" + r.name()))
-                .collect(Collectors.toSet());
-    }
 }

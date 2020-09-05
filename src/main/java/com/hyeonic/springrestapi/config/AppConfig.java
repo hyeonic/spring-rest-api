@@ -3,6 +3,7 @@ package com.hyeonic.springrestapi.config;
 import com.hyeonic.springrestapi.accounts.Account;
 import com.hyeonic.springrestapi.accounts.AccountRole;
 import com.hyeonic.springrestapi.accounts.AccountService;
+import com.hyeonic.springrestapi.common.AppProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -35,14 +36,25 @@ public class AppConfig {
             @Autowired
             AccountService accountService;
 
+            @Autowired
+            AppProperties appProperties;
+
             @Override
             public void run(ApplicationArguments args) throws Exception {
-                Account kihyecn = Account.builder()
-                        .email("kihyeon@email.com")
-                        .password("kihyeon")
-                        .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
+
+                Account admin = Account.builder()
+                        .email( appProperties.getAdminUserName() )
+                        .password( appProperties.getAdminPassword() )
+                        .roles( Set.of( AccountRole.ADMIN, AccountRole.USER ) )
                         .build();
-                accountService.saveAccount(kihyecn);
+                accountService.saveAccount( admin );
+
+                Account user = Account.builder()
+                        .email( appProperties.getUserUsername() )
+                        .password( appProperties.getUserPassword() )
+                        .roles( Set.of( AccountRole.USER ) )
+                        .build();
+                accountService.saveAccount( user );
             }
         };
     }

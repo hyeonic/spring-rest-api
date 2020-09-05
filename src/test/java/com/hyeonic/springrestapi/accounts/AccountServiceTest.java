@@ -1,5 +1,6 @@
 package com.hyeonic.springrestapi.accounts;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,12 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.client.ExpectedCount;
 
 import java.util.Set;
 
-import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -34,14 +34,11 @@ public class AccountServiceTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @Autowired
-    AccountRepository accountRepository;
-
     @Test
     public void findByUsername() {
         // Given
-        String password = "keesun";
-        String username = "keesun@email.com";
+        String username = "test1@email.com";
+        String password = "test1234";
         Account account = Account.builder()
                 .email(username)
                 .password(password)
@@ -54,20 +51,18 @@ public class AccountServiceTest {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         // Then
-        assertThat( this.passwordEncoder.matches( password, userDetails.getPassword() ) );
+        assertThat(this.passwordEncoder.matches(password, userDetails.getPassword())).isTrue();
     }
 
     @Test
-    public void findByusernameFail() {
-
+    public void findByUsernameFail() {
         // Expected
-        String username = "random@gmail.com";
+        String username = "random@email.com";
         expectedException.expect(UsernameNotFoundException.class);
         expectedException.expectMessage(Matchers.containsString(username));
 
         // When
         accountService.loadUserByUsername(username);
-
     }
 
 }
